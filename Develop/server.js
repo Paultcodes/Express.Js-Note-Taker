@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-var uniqid = require('uniqid');
+const idRandom = require('./helpers/randomId');
 
 const PORT = 3001;
 
@@ -16,10 +16,52 @@ app.get('/api/notes', (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      return parsedNotes = res.json(JSON.parse(data));
-      
+      return res.json(JSON.parse(data));
     }
   });
+});
+
+app.post('/api/notes', (req, res) => {
+  console.info(`${req.method} request received to add a note`);
+
+  const { title, text } = req.body;
+
+  if (title && text) {
+    const newNote = {
+      title,
+      text,
+      id: randomId(),
+    };
+
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const parsedNOtes = JSON.parse(data);
+
+        parsedNOtes.push(newNote);
+
+        fs.writeFile(
+          './db/db.json',
+          JSON.stringify(parsedNOtes, null, 4),
+          (writeErr) =>
+            writeErr
+              ? console.error(writeErr)
+              : console.info('Successfully updated notes!')
+        );
+      }
+    });
+
+    const response = {
+      status: 'success',
+      body: newNote,
+    };
+
+    console.log(response);
+    res.status(201).json(response);
+  } else {
+    res.status(500).json('Error in posting note');
+  }
 });
 
 app.get('/notes', (req, res) => {
@@ -33,3 +75,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, () =>
   console.log(`Listening at this location http://localhost:${PORT}`)
 );
+
+
