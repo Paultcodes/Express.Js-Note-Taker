@@ -21,6 +21,23 @@ app.get('/api/notes', (req, res) => {
   });
 });
 
+app.delete('/api/notes/:id', (req, res) => {
+  const deleteNoteId = req.params.id;
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      let parsedNotes = JSON.parse(data);
+      const findId = parsedNotes.findIndex((obj) => obj.id === deleteNoteId);
+      if (findId > -1) {
+        parsedNotes.splice(findId, 1);
+      }
+      console.log(parsedNotes);
+    }
+  });
+});
+
 app.post('/api/notes', (req, res) => {
   console.info(`${req.method} request received to add a note`);
 
@@ -75,5 +92,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () =>
   console.log(`Listening at this location http://localhost:${PORT}`)
 );
-
-
