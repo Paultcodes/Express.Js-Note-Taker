@@ -7,10 +7,12 @@ const PORT = 3001;
 
 const app = express();
 
+// Middleware for the application
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.json());
 
+//Route for reading file and parsing the notes data
 app.get('/api/notes', (req, res) => {
   fs.readFile('./db/db.json', 'utf8', (err, data) => {
     if (err) {
@@ -21,6 +23,7 @@ app.get('/api/notes', (req, res) => {
   });
 });
 
+//Route for deleting notes. Reads the file, parses the data and finds the note with right ID and then rewrites the file.
 app.delete('/api/notes/:id', (req, res) => {
   const deleteNoteId = req.params.id;
 
@@ -29,15 +32,23 @@ app.delete('/api/notes/:id', (req, res) => {
       console.log(err);
     } else {
       let parsedNotes = JSON.parse(data);
-      const findId = parsedNotes.findIndex((obj) => obj.id === deleteNoteId);
-      if (findId > -1) {
-        parsedNotes.splice(findId, 1);
+      const indexOfId = parsedNotes.findIndex((obj) => obj.id === deleteNoteId);
+      if (indexOfId > -1) {
+        parsedNotes.splice(indexOfId, 1);
       }
-      console.log(parsedNotes);
+      fs.writeFile(
+        './db/db.json',
+        JSON.stringify(parsedNotes, null, 4),
+        (err) =>
+          err ? console.log(err) : console.log('Data base has been updated')
+      );
     }
   });
+
+  res.sendFile('./db/db.json');
 });
 
+//Route for creating a new note
 app.post('/api/notes', (req, res) => {
   console.info(`${req.method} request received to add a note`);
 
