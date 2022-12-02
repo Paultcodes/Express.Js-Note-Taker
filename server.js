@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const idRandom = require('./helpers/randomId');
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-// Middleware for the application
+// Middleware for parsing JSON and urlencoded form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.json());
@@ -40,12 +40,12 @@ app.delete('/api/notes/:id', (req, res) => {
         './db/db.json',
         JSON.stringify(parsedNotes, null, 4),
         (err) =>
-          err ? console.log(err) : console.log('Data base has been updated')
+          err ? console.log(err) : console.log('Database has been updated')
       );
     }
   });
 
-  res.sendFile('./db/db.json');
+  res.sendFile(path.join(__dirname, './db/db.json'));
 });
 
 //Route for creating a new note
