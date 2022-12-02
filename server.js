@@ -16,7 +16,7 @@ app.use(express.json());
 app.get('/api/notes', (req, res) => {
   fs.readFile('./db/db.json', 'utf8', (err, data) => {
     if (err) {
-      console.log(err);
+      res.status(400).json({ error: err.message });
     } else {
       return res.json(JSON.parse(data));
     }
@@ -29,7 +29,7 @@ app.delete('/api/notes/:id', (req, res) => {
 
   fs.readFile('./db/db.json', 'utf8', (err, data) => {
     if (err) {
-      console.log(err);
+      res.status(400).json({ error: err.message });
     } else {
       let parsedNotes = JSON.parse(data);
       const indexOfId = parsedNotes.findIndex((obj) => obj.id === deleteNoteId);
@@ -40,7 +40,7 @@ app.delete('/api/notes/:id', (req, res) => {
         './db/db.json',
         JSON.stringify(parsedNotes, null, 4),
         (err) =>
-          err ? console.log(err) : console.log('Database has been updated')
+          err ? res.status(400).json({ error: err.message }) : console.log('Database has been updated')
       );
     }
   });
@@ -63,7 +63,7 @@ app.post('/api/notes', (req, res) => {
 
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
       if (err) {
-        console.error(err);
+        res.status(400).json({ error: err.message });
       } else {
         const parsedNOtes = JSON.parse(data);
 
