@@ -10,4 +10,4 @@ Clone the repository by copying the SSH and key and running "git clone" follwed 
 
 ## Demo
 
-Here is a picture and link to the deployed website https://obscure-stream-88846.herokuapp.com/notes
+Here is a picture and link to the deployed website [https://obscure-stream-88846.herokuapp.com/notes](https://obscure-stream-88846.herokuapp.com/)
